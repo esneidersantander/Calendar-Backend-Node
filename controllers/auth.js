@@ -25,7 +25,7 @@ const crearUsuario = async (req,  resp = response)=>{
         await usuario.save();
     
         //generar jwt
-        const token = await generarJWT(Usuario.id, usuario.name);
+        const token = await generarJWT(usuario.id, usuario.name);
 
         resp.status(201).json({
             ok:true,
@@ -65,9 +65,8 @@ const loginUsuario = async (req, resp= response)=>{
         }
 
         //generar jwt
-        const token = await generarJWT(Usuario.id, usuario.name);
+        const token = await generarJWT(usuario.id, usuario.name);
 
-            console.log(token);
         resp.json({
             ok:true,
             uid:usuario.id,
@@ -84,10 +83,15 @@ const loginUsuario = async (req, resp= response)=>{
     }
 
 }
-const revalidarToken = (req, resp= response)=>{
+const revalidarToken = async (req, resp= response)=>{
+
+    const {uid, name} = req;
+
+    //generar jwt
+    const token = await generarJWT(uid, name);
     resp.json({
         ok:true,
-        msg:'renew'
+        token
     })
 }
 
