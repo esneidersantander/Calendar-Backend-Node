@@ -1,16 +1,37 @@
-const {response} = require('express');
+const {response, request} = require('express');
 const {generarJWT} = require('../helpers/jwt');
+const Evento = require('../models/Evento');
 
-const getEventos=(req, resp = response)=>{
+
+const getEventos= async (req, resp = response)=>{
+    const eventos = await Evento.find()
+                                .populate('user', 'name')
+
+
+
     resp.json({
         ok:true,
-        msg:'geteventops'
+        msg:eventos
     })
 }
-const crearEvento=(req, resp = response)=>{
+const crearEvento= async (req, resp = response)=>{
 
-    //verificar que tenga el evento
-    console.log(req.body);
+    const evento = new Evento(req.body);
+    try {
+
+        evento.user = req.uid
+
+        const eventoGuardado = await evento.save();
+        resp.json({
+            ok:true,
+            evento:eventoGuardado
+        })
+    } catch (error) {
+        resp.status(500).json({
+            ok:false,
+            msg: "Hable con el adminsitrador"
+        })
+    }
 
     resp.json({
         ok:true,
